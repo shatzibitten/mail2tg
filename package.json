@@ -7,6 +7,13 @@
   "bin": {
     "mail2tg": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "src/worker-template"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsx src/index.ts",

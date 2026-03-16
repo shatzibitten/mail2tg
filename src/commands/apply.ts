@@ -22,15 +22,21 @@ export async function runApply(options: CliOptions): Promise<void> {
   }
   const chatId = built.chatId as string;
 
-  const summary: Array<{ step: string; status: string }> = [];
+  const summary: Array<{ step: string; status: string; error?: string }> = [];
 
-  await deployWorker({
-    workerName: config.workerName,
-    accountId: built.zone.account.id,
-    mailbox: config.mailbox,
-    cloudflareApiToken: secrets.cloudflareApiToken
-  });
-  summary.push({ step: "deploy-worker", status: "ok" });
+  try {
+    await deployWorker({
+      workerName: config.workerName,
+      accountId: built.zone.account.id,
+      mailbox: config.mailbox,
+      cloudflareApiToken: secrets.cloudflareApiToken
+    });
+    summary.push({ step: "deploy-worker", status: "ok" });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    summary.push({ step: "deploy-worker", status: "failed", error: message });
+    out.error(`Worker deployment failed: ${message}`, 5, { summary });
+  }
 
   const dnsActions = await cf.upsertMxAndSpf(built.zone.id, config.domain);
   summary.push({

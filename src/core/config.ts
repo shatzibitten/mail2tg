@@ -28,11 +28,32 @@ export function resolveConfigPath(inputPath?: string): string {
 export function loadConfig(configPath?: string): Mail2TgConfig {
   const resolved = resolveConfigPath(configPath);
   if (!fs.existsSync(resolved)) {
-    throw new Error(`Config file not found: ${resolved}`);
+    throw new Error(`Config file not found: ${resolved}\nRun "mail2tg init" to create one.`);
   }
-  const raw = fs.readFileSync(resolved, "utf8");
-  const parsed = YAML.parse(raw);
-  return configSchema.parse(parsed);
+
+  let raw: string;
+  try {
+    raw = fs.readFileSync(resolved, "utf8");
+  } catch (err) {
+    throw new Error(`Cannot read config file ${resolved}: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = YAML.parse(raw);
+  } catch (err) {
+    throw new Error(`Invalid YAML in ${resolved}: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
+  try {
+    return configSchema.parse(parsed);
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      const issues = err.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`).join("\n");
+      throw new Error(`Invalid config in ${resolved}:\n${issues}`);
+    }
+    throw err;
+  }
 }
 
 export function saveConfig(config: Mail2TgConfig, configPath?: string): string {
@@ -43,10 +64,22 @@ export function saveConfig(config: Mail2TgConfig, configPath?: string): string {
 }
 
 export function loadSecretsFromEnv(): SecretsInput {
-  const envParsed = {
-    cloudflareApiToken:
-      process.env.CLOUDFLARE_API_TOKEN ?? process.env.CF_API_TOKEN ?? "",
-    telegramBotToken: process.env.TELEGRAM_BOT_TOKEN ?? ""
-  };
-  return secretSchema.parse(envParsed);
+  const cloudflareApiToken =
+    process.env.CLOUDFLARE_API_TOKEN ?? process.env.CF_API_TOKEN ?? "";
+  const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN ?? "";
+
+  const missing: string[] = [];
+  if (!cloudflareApiToken) missing.push("CLOUDFLARE_API_TOKEN");
+  if (!telegramBotToken) missing.push("TELEGRAM_BOT_TOKEN");
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing required environment variables: ${missing.join(", ")}\n` +
+      "Export them before running:\n" +
+      '  export CLOUDFLARE_API_TOKEN="..."\n' +
+      '  export TELEGRAM_BOT_TOKEN="..."'
+    );
+  }
+
+  return secretSchema.parse({ cloudflareApiToken, telegramBotToken });
 }

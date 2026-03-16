@@ -49,6 +49,7 @@ export async function runDoctor(options: CliOptions): Promise<void> {
   const allOk = Object.values(checks).every(Boolean);
   if (!allOk) {
     out.error("Doctor checks failed", 4, checks);
+  } else {
+    out.success("Doctor checks passed", checks);
   }
-  out.success("Doctor checks passed", checks);
 }
