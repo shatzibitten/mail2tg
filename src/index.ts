@@ -5,6 +5,8 @@ import { runPlan } from "./commands/plan.js";
 import { runApply } from "./commands/apply.js";
 import { runDoctor } from "./commands/doctor.js";
 import type { CliOptions } from "./types/index.js";
+import { Output } from "./core/output.js";
+import { getExitCode } from "./core/errors.js";
 
 const program = new Command();
 
@@ -65,6 +67,6 @@ program
   });
 
 program.parseAsync(process.argv).catch((error) => {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exit(3);
+  const out = new Output(process.argv.includes("--json") ? "json" : "human");
+  out.error(error instanceof Error ? error.message : String(error), getExitCode(error));
 });

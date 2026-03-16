@@ -32,9 +32,15 @@ export async function runDoctor(options: CliOptions): Promise<void> {
   const checks = {
     zone: true,
     mxConfigured: hasMx(dns),
-    routingConfigured: rules.some((rule) =>
-      rule.matchers.some((m) => m.field === "to" && m.value === config.mailbox)
-    ),
+    routingConfigured: rules.some((rule) => {
+      const targetMailbox = rule.matchers.some(
+        (m) => m.field === "to" && m.value === config.mailbox
+      );
+      const targetWorker = rule.actions.some(
+        (a) => a.type === "worker" && (a.value?.includes(config.workerName) ?? false)
+      );
+      return rule.enabled && targetMailbox && targetWorker;
+    }),
     telegramBotValid: Boolean(me.username),
     telegramChatResolvable: Boolean(chatId)
   };

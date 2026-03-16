@@ -3,6 +3,7 @@ import path from "node:path";
 import YAML from "yaml";
 import { z } from "zod";
 import type { Mail2TgConfig, SecretsInput } from "../types/index.js";
+import { CliError } from "./errors.js";
 
 const configSchema = z.object({
   projectName: z.string().min(1).default("mail2tg-project"),
@@ -28,21 +29,30 @@ export function resolveConfigPath(inputPath?: string): string {
 export function loadConfig(configPath?: string): Mail2TgConfig {
   const resolved = resolveConfigPath(configPath);
   if (!fs.existsSync(resolved)) {
-    throw new Error(`Config file not found: ${resolved}\nRun "mail2tg init" to create one.`);
+    throw new CliError(
+      `Config file not found: ${resolved}\nRun "mail2tg init" to create one.`,
+      2
+    );
   }
 
   let raw: string;
   try {
     raw = fs.readFileSync(resolved, "utf8");
   } catch (err) {
-    throw new Error(`Cannot read config file ${resolved}: ${err instanceof Error ? err.message : String(err)}`);
+    throw new CliError(
+      `Cannot read config file ${resolved}: ${err instanceof Error ? err.message : String(err)}`,
+      2
+    );
   }
 
   let parsed: unknown;
   try {
     parsed = YAML.parse(raw);
   } catch (err) {
-    throw new Error(`Invalid YAML in ${resolved}: ${err instanceof Error ? err.message : String(err)}`);
+    throw new CliError(
+      `Invalid YAML in ${resolved}: ${err instanceof Error ? err.message : String(err)}`,
+      2
+    );
   }
 
   try {
@@ -50,7 +60,7 @@ export function loadConfig(configPath?: string): Mail2TgConfig {
   } catch (err) {
     if (err instanceof z.ZodError) {
       const issues = err.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`).join("\n");
-      throw new Error(`Invalid config in ${resolved}:\n${issues}`);
+      throw new CliError(`Invalid config in ${resolved}:\n${issues}`, 2);
     }
     throw err;
   }
@@ -73,11 +83,12 @@ export function loadSecretsFromEnv(): SecretsInput {
   if (!telegramBotToken) missing.push("TELEGRAM_BOT_TOKEN");
 
   if (missing.length > 0) {
-    throw new Error(
+    throw new CliError(
       `Missing required environment variables: ${missing.join(", ")}\n` +
       "Export them before running:\n" +
       '  export CLOUDFLARE_API_TOKEN="..."\n' +
-      '  export TELEGRAM_BOT_TOKEN="..."'
+      '  export TELEGRAM_BOT_TOKEN="..."',
+      2
     );
   }
 
