@@ -28,11 +28,29 @@ After `apply`, there are no local processes — Cloudflare handles everything.
 ## Prerequisites
 
 - **Node.js >= 20** — [download](https://nodejs.org/)
-- **A domain on Cloudflare** — the domain's DNS must be managed by Cloudflare ([add a domain](https://developers.cloudflare.com/fundamentals/setup/manage-domains/add-a-domain/))
+- **A domain with DNS on Cloudflare** — see [Domain setup](#domain-setup) below
 - **A Cloudflare API token** — see [Creating a Cloudflare API Token](#creating-a-cloudflare-api-token) below
 - **A Telegram bot** — create one via [@BotFather](https://t.me/BotFather) and copy the token
 
 > `wrangler` (Cloudflare's deploy tool) is downloaded automatically via `npx` during `apply`. No separate install needed.
+
+## Domain Setup
+
+Cloudflare Email Routing requires your domain's DNS to be **fully managed by Cloudflare**. This means the domain's nameservers at your registrar must point to Cloudflare.
+
+If your domain is **not yet on Cloudflare**:
+
+1. Sign up at [dash.cloudflare.com](https://dash.cloudflare.com/) and click **"Add a domain"**.
+2. Enter your domain (e.g. `example.com`) and select the Free plan.
+3. Cloudflare will show you **two nameservers** (e.g. `emma.ns.cloudflare.com`, `rob.ns.cloudflare.com`).
+4. Go to your **domain registrar** (GoDaddy, Namecheap, Porkbun, etc.) and **replace the existing nameservers** with the two Cloudflare gave you.
+5. Wait for propagation (usually 5-30 minutes, can take up to 24 hours). Cloudflare will email you when the domain is active.
+
+Official guide: [Change your nameservers (Cloudflare docs)](https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/)
+
+If your domain is **already on Cloudflare**, verify it shows **"Active"** status in the dashboard. No extra domain setup is needed.
+
+> **Important**: If you already use email on this domain (e.g. Google Workspace, Zoho), be aware that `mail2tg apply` creates new MX records pointing to Cloudflare's mail servers. This will **redirect all incoming email** through Cloudflare Email Routing. You can set up forwarding rules in Cloudflare to keep your existing mailboxes working alongside `mail2tg`. See [Cloudflare Email Routing docs](https://developers.cloudflare.com/email-routing/) for details.
 
 ## Install
 

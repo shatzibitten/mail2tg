@@ -6,7 +6,26 @@ Step-by-step guide from zero to working email-to-Telegram forwarding.
 
 - **Node.js >= 20** — [download](https://nodejs.org/)
 - **npm** (comes with Node.js)
-- **A domain with DNS managed by Cloudflare** — [add a domain](https://developers.cloudflare.com/fundamentals/setup/manage-domains/add-a-domain/)
+- **A domain with DNS managed by Cloudflare** (see step 0 below)
+
+## 0) Set up your domain on Cloudflare
+
+Cloudflare Email Routing only works when Cloudflare manages your domain's DNS. If your domain is already on Cloudflare and shows **"Active"** — skip to step 1.
+
+Otherwise:
+
+1. Go to [dash.cloudflare.com](https://dash.cloudflare.com/) → **"Add a domain"**.
+2. Enter your domain (e.g. `example.com`), pick the **Free** plan.
+3. Cloudflare will assign you **two nameservers** (e.g. `emma.ns.cloudflare.com`, `rob.ns.cloudflare.com`).
+4. Log in to your **domain registrar** (GoDaddy, Namecheap, Porkbun, etc.):
+   - Find **DNS / Nameservers** settings for your domain.
+   - **Replace** the existing nameservers with the two from Cloudflare.
+   - Save changes.
+5. Go back to Cloudflare and click **"Check nameservers"**. Propagation takes 5-30 minutes (up to 24h in rare cases). Cloudflare will email you when the domain is active.
+
+Official guide: [Change your nameservers (Cloudflare docs)](https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/)
+
+> **Warning about existing email**: If you already receive email on this domain (Google Workspace, Zoho, etc.), `mail2tg apply` will create MX records that route mail through Cloudflare. You can configure Cloudflare Email Routing to forward to your existing mailboxes alongside the Telegram worker. See [Cloudflare Email Routing docs](https://developers.cloudflare.com/email-routing/).
 
 ## 1) Create a Telegram bot
 
