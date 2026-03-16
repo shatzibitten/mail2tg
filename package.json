@@ -1,6 +1,6 @@
 {
   "name": "mail2tg",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI to configure Email to Telegram routing via Cloudflare",
   "type": "module",
   "main": "dist/index.js",
