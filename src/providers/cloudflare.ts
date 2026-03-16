@@ -279,7 +279,8 @@ export class CloudflareProvider {
         method: "PUT",
         body: {
           name: secretName,
-          text: secretValue
+          text: secretValue,
+          type: "secret_text"
         }
       }
     );
