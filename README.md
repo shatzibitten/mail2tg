@@ -173,7 +173,11 @@ Secrets are **never** stored in the config file — only in environment variable
 
 ## Agent Usage
 
-Use machine-readable output in CI/CD or AI agent environments:
+This repo includes built-in instructions for AI coding agents. Clone or open the repo and your agent will know how to set everything up:
+
+- **Cursor** — [`.cursor/skills/mail2tg/SKILL.md`](.cursor/skills/mail2tg/SKILL.md) is loaded automatically when you open the project.
+- **Claude Code** — [`CLAUDE.md`](CLAUDE.md) is read automatically when working in this directory.
+- **Any agent with shell access** — use `--json` and `--non-interactive` flags:
 
 ```bash
 mail2tg plan --json --non-interactive
