@@ -1,5 +1,10 @@
 # mail2tg
 
+[![npm version](https://img.shields.io/npm/v/mail2tg)](https://www.npmjs.com/package/mail2tg)
+[![license](https://img.shields.io/npm/l/mail2tg)](LICENSE)
+[![node](https://img.shields.io/node/v/mail2tg)](https://nodejs.org/)
+[![CI](https://github.com/shatzibitten/mail2tg/actions/workflows/ci.yml/badge.svg)](https://github.com/shatzibitten/mail2tg/actions)
+
 `mail2tg` is a local-first CLI that configures **Email -> Telegram** routing using Cloudflare Email Routing and Workers. You run it once on your machine — it sets up everything in Cloudflare and there is nothing to host or keep running.
 
 ## How It Works
