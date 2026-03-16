@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.mail2tg-state.json
+mail2tg.config.yaml
+.DS_Store
+*.log

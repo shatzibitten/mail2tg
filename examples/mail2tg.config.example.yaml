@@ -1,0 +1,5 @@
+projectName: mail2tg-project
+domain: example.com
+mailbox: info@example.com
+workerName: mail2tg-worker
+telegramChatId: "123456789"
