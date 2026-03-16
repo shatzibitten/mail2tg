@@ -25,6 +25,23 @@ After `apply`, there are no local processes — Cloudflare handles everything.
 - Agent-friendly (`--json`, `--non-interactive`, stable exit codes).
 - Works on macOS, Linux, and Windows.
 
+## FAQ
+
+**Do I need to keep a server or process running?**
+No. The CLI runs once on your machine to configure everything. After that, the Cloudflare Worker runs on Cloudflare's edge network — no VPS, no Docker, no cron jobs, nothing on your computer. You can close the terminal and uninstall the CLI; emails will keep arriving in Telegram.
+
+**Will this cost me money?**
+No. Everything used is within free tiers:
+- **Cloudflare Email Routing** — free on all plans, including Free.
+- **Cloudflare Workers** — free tier includes 100,000 requests/day (that's 100K emails/day).
+- **Telegram Bot API** — free, no limits for personal use.
+- **Cloudflare DNS** — free.
+
+You will not be charged unless you exceed 100,000 emails per day, which is unlikely for personal or small business use.
+
+**Can Cloudflare or anyone else read my emails?**
+The email passes through Cloudflare's infrastructure (just like it passes through any email relay). Your Cloudflare Worker code is **yours** — it is deployed to your own Cloudflare account. Cloudflare does not inspect Worker content. The full source code of the Worker is [open and auditable](src/worker-template/index.ts). No data is sent anywhere except to the Telegram Bot API (your bot, your chat). No analytics, no third-party services, no logging beyond what you configure yourself.
+
 ## Prerequisites
 
 - **Node.js >= 20** — [download](https://nodejs.org/)
